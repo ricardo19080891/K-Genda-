@@ -1,12 +1,187 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Teste GitHub Pages</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>K-Genda • App Base</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root{
+      --bg:#0f1220;
+      --card:#171a2f;
+      --accent:#6ae3ff;
+      --text:#e9ecff;
+      --muted:#9aa0c7;
+      --ok:#4ade80;
+      --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:linear-gradient(180deg,#0b0e1a,#0f1220);
+      color:var(--text);
+    }
+    header{
+      padding:16px; display:flex; justify-content:space-between; align-items:center;
+      background:#0b0e1a; position:sticky; top:0;
+    }
+    header h1{font-size:18px; margin:0}
+    header button{
+      background:var(--accent); color:#001018; border:0; border-radius:10px;
+      padding:8px 12px; font-weight:700;
+    }
+    main{padding:16px}
+    .card{
+      background:var(--card); border-radius:16px; padding:16px; margin-bottom:12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{
+      background:#22265a; color:var(--text); border:1px solid #2b2f6a;
+      border-radius:12px; padding:10px 14px; font-weight:600;
+    }
+    .btn.primary{background:var(--accent); color:#001018; border:0}
+    .btn.warn{background:#3b2b0f; border-color:#6b4b12}
+    .hidden{display:none}
+    input{
+      width:100%; padding:12px; border-radius:12px; border:1px solid #2b2f6a;
+      background:#0e1130; color:var(--text);
+    }
+    nav{
+      position:fixed; bottom:0; left:0; right:0; background:#0b0e1a;
+      display:flex; justify-content:space-around; padding:10px;
+    }
+    nav button{background:none; border:0; color:var(--muted); font-weight:700}
+    nav button.active{color:var(--accent)}
+    footer{height:70px}
+    .tag{padding:4px 8px; border-radius:999px; background:#10144a; color:var(--accent); font-size:12px}
+  </style>
 </head>
-<body style="font-family:Arial; padding:20px;">
-  <h1>✅ GitHub Pages Funcionando</h1>
-  <p>Se você está vendo isso, o problema NÃO é o Pages.</p>
+
+<body>
+
+<header>
+  <h1 id="title">K-Genda</h1>
+  <button id="logout" class="hidden">Sair</button>
+</header>
+
+<main>
+
+  <!-- LOGIN -->
+  <section id="login" class="card">
+    <h2>Login</h2>
+    <p class="muted">Entre para acessar seu app.</p>
+    <input id="name" placeholder="Seu nome" />
+    <div class="row" style="margin-top:10px">
+      <button class="btn primary" onclick="doLogin()">Entrar</button>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <section id="app" class="hidden">
+    <div class="card">
+      <h2>Resumo</h2>
+      <p>Olá, <strong id="userName"></strong> 👋</p>
+      <span class="tag">IA Offline (base)</span>
+    </div>
+
+    <div class="card">
+      <h3>Tarefas</h3>
+      <input id="taskInput" placeholder="Nova tarefa…" />
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" onclick="addTask()">Adicionar</button>
+      </div>
+      <ul id="tasks"></ul>
+    </div>
+
+    <div class="card">
+      <h3>ERP (separado)</h3>
+      <p>Área reservada para CRM / Projetos.</p>
+      <button class="btn warn" onclick="openERP()">Abrir ERP</button>
+    </div>
+  </section>
+
+  <!-- ERP -->
+  <section id="erp" class="hidden">
+    <div class="card">
+      <h2>ERP</h2>
+      <p>Clientes, serviços e projetos (base).</p>
+      <button class="btn" onclick="backToApp()">Voltar</button>
+    </div>
+  </section>
+
+</main>
+
+<footer></footer>
+
+<nav id="nav" class="hidden">
+  <button onclick="show('app')" class="active">Home</button>
+  <button onclick="show('erp')">ERP</button>
+</nav>
+
+<script>
+  // Estado simples (offline)
+  const state = {
+    user: localStorage.getItem('user') || null,
+    tasks: JSON.parse(localStorage.getItem('tasks') || '[]')
+  };
+
+  const el = id => document.getElementById(id);
+
+  function renderTasks(){
+    const ul = el('tasks');
+    ul.innerHTML = '';
+    state.tasks.forEach(t=>{
+      const li = document.createElement('li');
+      li.textContent = '• ' + t;
+      ul.appendChild(li);
+    });
+    localStorage.setItem('tasks', JSON.stringify(state.tasks));
+  }
+
+  function doLogin(){
+    const name = el('name').value.trim();
+    if(!name) return alert('Digite seu nome');
+    state.user = name;
+    localStorage.setItem('user', name);
+    startApp();
+  }
+
+  function startApp(){
+    el('login').classList.add('hidden');
+    el('app').classList.remove('hidden');
+    el('nav').classList.remove('hidden');
+    el('logout').classList.remove('hidden');
+    el('userName').textContent = state.user;
+    renderTasks();
+  }
+
+  function addTask(){
+    const v = el('taskInput').value.trim();
+    if(!v) return;
+    state.tasks.push(v);
+    el('taskInput').value='';
+    renderTasks();
+  }
+
+  function show(which){
+    ['app','erp'].forEach(s=>el(s).classList.add('hidden'));
+    el(which).classList.remove('hidden');
+    [...document.querySelectorAll('nav button')].forEach(b=>b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  function openERP(){ show('erp'); }
+  function backToApp(){ show('app'); }
+
+  el('logout').onclick = ()=>{
+    localStorage.clear();
+    location.reload();
+  };
+
+  // Auto-login
+  if(state.user){ startApp(); }
+</script>
+
 </body>
 </html>

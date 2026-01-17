@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-Genda • Criar conta</title>
+
+<style>
+:root{
+  --bg:#0b1020; --card:#111633; --text:#e9ecf1; --muted:#9aa3b2;
+  --stroke:rgba(255,255,255,.12);
+  --brandA:#5ddcff; --brandB:#7f5cff;
+}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial}
+html,body{height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(1000px 600px at 12% 10%, rgba(93,220,255,.12), transparent 60%),
+    radial-gradient(900px 600px at 88% 18%, rgba(127,92,255,.12), transparent 55%),
+    linear-gradient(180deg,#0b1020,#070a12);
+  color:var(--text);
+}
+a{color:#b9c2ff;text-decoration:none}
+.card{
+  background:linear-gradient(180deg, rgba(21,28,58,.75), rgba(15,20,48,.62));
+  border:1px solid var(--stroke);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 18px 45px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(12px);
+}
+.pill{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);font-weight:800;font-size:12px;color:rgba(233,236,241,.85)}
+.sub{color:var(--muted);font-size:14px}
+.btn{
+  width:100%; padding:14px 16px; border-radius:14px; border:0;
+  margin:10px 0; display:flex; gap:12px; align-items:center; justify-content:center;
+  font-size:15px; font-weight:800; cursor:pointer; user-select:none;
+}
+.btn.secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.12)}
+.btn.google{background:#fff;color:#111}
+.btn.apple{background:#000;color:#fff}
+.btn.github{background:#24292f;color:#fff}
+.btn.email{background:linear-gradient(90deg,var(--brandA),var(--brandB));color:#070a12}
+.field{
+  width:100%; padding:14px 14px; border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(7,10,18,.35); color:var(--text); font-size:15px; outline:none;
+}
+.field::placeholder{color:rgba(233,236,241,.5)}
+.small{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+.sep{display:flex;align-items:center;gap:12px;color:#7f88a6;margin:14px 0 10px}
+.sep:before,.sep:after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}
+.linkbar{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-weight:700;font-size:13px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  background:rgba(0,0,0,.72);color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  padding:12px 14px;border-radius:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+  max-width:min(520px,92vw);
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.toast.show{opacity:1}
+</style>
+
+<style>.wrap{width:min(440px,92vw);padding:22px}
+.checkbox{display:flex;gap:10px;align-items:flex-start;margin-top:10px}
+.checkbox input{margin-top:3px}
+</style></head><body>
+<div class="wrap"><div class="card">
+  <div class="pill">Primeiro acesso</div>
+  <div style="font-size:34px;font-weight:900;margin:10px 0 6px">Criar conta</div>
+  <div class="sub" style="margin-bottom:16px">Crie seu usuário com email e senha.</div>
+
+  <input id="name" class="field" placeholder="Nome" autocomplete="name">
+  <div style="height:10px"></div>
+  <input id="email" class="field" placeholder="Email" type="email" autocomplete="email">
+  <div style="height:10px"></div>
+  <div class="row">
+    <input id="pass" class="field" placeholder="Senha" type="password" autocomplete="new-password">
+    <input id="pass2" class="field" placeholder="Confirmar" type="password" autocomplete="new-password">
+  </div>
+
+  <div class="checkbox">
+    <input id="terms" type="checkbox">
+    <div class="sub">
+      Li e concordo com os <a href="#" onclick="alert('Termos (placeholder)');return false;">Termos de Uso</a> e
+      <a href="#" onclick="alert('Política (placeholder)');return false;">Política de Privacidade</a>.
+    </div>
+  </div>
+
+  <button id="createBtn" class="btn email" onclick="createAccount()" disabled style="opacity:.55;cursor:not-allowed">Criar conta</button>
+
+  <div class="linkbar" style="margin-top:12px">
+    <a href="index.html">Voltar</a>
+    <a href="#" onclick="alert('Segurança Firebird: em breve');return false;">Segurança</a>
+  </div>
+
+  <div class="small">Conta salva localmente (modo teste). Integração Firebird vem depois.</div>
+</div></div>
+
+<div id="toast" class="toast"></div>
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),2200);}
+const terms=document.getElementById('terms');const btn=document.getElementById('createBtn');
+terms.addEventListener('change',()=>{
+  if(terms.checked){btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';}
+  else{btn.disabled=true;btn.style.opacity='.55';btn.style.cursor='not-allowed';}
+});
+function createAccount(){
+  const name=(document.getElementById('name').value||'').trim();
+  const email=(document.getElementById('email').value||'').trim().toLowerCase();
+  const pass=document.getElementById('pass').value||'';
+  const pass2=document.getElementById('pass2').value||'';
+  if(!terms.checked) return toast("Aceite os termos para continuar.");
+  if(!name||!email||!pass) return toast("Preencha todos os campos.");
+  if(pass.length<6) return toast("Senha mínima: 6 caracteres.");
+  if(pass!==pass2) return toast("As senhas não conferem.");
+  const users=JSON.parse(localStorage.getItem('kg_users')||'[]');
+  if(users.some(u=>u.email===email)) return toast("Email já cadastrado.");
+  users.push({name,email,pass,createdAt:Date.now()});
+  localStorage.setItem('kg_users', JSON.stringify(users));
+  localStorage.setItem('kg_session', JSON.stringify({email,name}));
+  localStorage.setItem('kg_first_run','1');
+  window.location.href='onboarding.html';
+}
+</script></body></html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-Genda • App</title>
+
+<style>
+:root{
+  --bg:#0b1020; --card:#111633; --text:#e9ecf1; --muted:#9aa3b2;
+  --stroke:rgba(255,255,255,.12);
+  --brandA:#5ddcff; --brandB:#7f5cff;
+}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial}
+html,body{height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(1000px 600px at 12% 10%, rgba(93,220,255,.12), transparent 60%),
+    radial-gradient(900px 600px at 88% 18%, rgba(127,92,255,.12), transparent 55%),
+    linear-gradient(180deg,#0b1020,#070a12);
+  color:var(--text);
+}
+a{color:#b9c2ff;text-decoration:none}
+.card{
+  background:linear-gradient(180deg, rgba(21,28,58,.75), rgba(15,20,48,.62));
+  border:1px solid var(--stroke);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 18px 45px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(12px);
+}
+.pill{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);font-weight:800;font-size:12px;color:rgba(233,236,241,.85)}
+.sub{color:var(--muted);font-size:14px}
+.btn{
+  width:100%; padding:14px 16px; border-radius:14px; border:0;
+  margin:10px 0; display:flex; gap:12px; align-items:center; justify-content:center;
+  font-size:15px; font-weight:800; cursor:pointer; user-select:none;
+}
+.btn.secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.12)}
+.btn.google{background:#fff;color:#111}
+.btn.apple{background:#000;color:#fff}
+.btn.github{background:#24292f;color:#fff}
+.btn.email{background:linear-gradient(90deg,var(--brandA),var(--brandB));color:#070a12}
+.field{
+  width:100%; padding:14px 14px; border-radius:14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(7,10,18,.35); color:var(--text); font-size:15px; outline:none;
+}
+.field::placeholder{color:rgba(233,236,241,.5)}
+.small{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
+.sep{display:flex;align-items:center;gap:12px;color:#7f88a6;margin:14px 0 10px}
+.sep:before,.sep:after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}
+.linkbar{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-weight:700;font-size:13px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+  background:rgba(0,0,0,.72);color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  padding:12px 14px;border-radius:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+  max-width:min(520px,92vw);
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.toast.show{opacity:1}
+</style>
+
+<style>
+.container{max-width:900px;margin:0 auto;padding:16px 16px 90px}
+.topbar{position:sticky;top:0;z-index:50;backdrop-filter: blur(12px);
+  background:linear-gradient(180deg, rgba(11,16,32,.85), rgba(11,16,32,.55));
+  border-bottom:1px solid rgba(255,255,255,.10);}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;position:relative}
+.brand{font-weight:900;letter-spacing:-.3px;font-size:20px}
+.iconbtn{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+.iconbtn:active{transform:scale(.98)}
+.dropdown{position:absolute; right:0; top:58px; width:min(320px,86vw);
+  border-radius:18px; border:1px solid rgba(255,255,255,.12);
+  background:rgba(245,248,255,.92); color:#0b1020;
+  box-shadow:0 18px 45px rgba(0,0,0,.35); overflow:hidden; display:none;}
+.dropdown.open{display:block; animation:pop .14s ease-out}
+@keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:translateY(0);opacity:1}}
+.dd-item{padding:16px 18px;font-size:20px;color:#1d4ed8;cursor:pointer}
+.dd-item:active{background:rgba(0,0,0,.06)}
+.dd-sep{height:1px;background:rgba(0,0,0,.08)}
+.dd-erp{padding:16px 18px;font-size:22px;font-weight:900;color:#0ea5a8;cursor:pointer}
+.dd-erp:active{background:rgba(0,0,0,.06)}
+.section-title{font-size:34px;font-weight:900;letter-spacing:-.5px;margin:18px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.card-sm{grid-column:span 12}
+@media (min-width:760px){.card-sm{grid-column:span 6}}
+.hide{display:none}
+.footer-nav{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg, rgba(11,16,32,.35), rgba(11,16,32,.90));
+  border-top:1px solid rgba(255,255,255,.10);backdrop-filter: blur(12px);}
+.footer-inner{max-width:900px;margin:0 auto;display:flex}
+.tab{flex:1;padding:14px 10px;text-align:center;color:#8ab4ff;font-weight:700;cursor:pointer}
+.tab.active{color:#e9ecf1}
+</style></head><body>
+<div class="topbar"><div class="topbar-inner">
+  <div class="brand">K‑Genda</div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="iconbtn" id="menuBtn" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="iconbtn" onclick="logout()" aria-label="Sair" title="Sair">⎋</button>
+  </div>
+  <div id="menu" class="dropdown" role="menu" aria-label="Menu">
+    <div class="dd-item" data-go="dashboard">Dashboard</div>
+    <div class="dd-item" data-go="clientes">Clientes</div>
+    <div class="dd-item" data-go="agendar">Agendar</div>
+    <div class="dd-item" data-go="calendario">Calendário</div>
+    <div class="dd-item" data-go="tarefas">Tarefas</div>
+    <div class="dd-item" data-go="mensagens">Mensagens</div>
+    <div class="dd-item" data-go="config">Configuração</div>
+    <div class="dd-item" data-go="novo">+ Novo</div>
+    <div class="dd-sep"></div>
+    <div class="dd-erp" onclick="location.href='erp.html'">ERP</div>
+  </div>
+</div></div>
+
+<div class="container">
+  <div id="dashboard" class="view">
+    <div class="section-title">Dashboard</div>
+    <div class="grid">
+      <div class="card card-sm">
+        <div class="pill">Resumo</div>
+        <div style="font-size:18px;margin-top:10px">Olá, <b id="who">usuário</b> 👋</div>
+        <div style="color:var(--muted);margin-top:6px">Diário: <span id="diary">—</span></div>
+      </div>
+      <div class="card card-sm">
+        <div class="pill">IA Offline (base)</div>
+        <div style="margin-top:10px;color:var(--muted)">Pronto para sugestões locais (futuro).</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="clientes" class="view hide">
+    <div class="section-title">Clientes</div>
+    <div class="card">
+      <div class="sub">Cadastro rápido (modo teste)</div>
+      <div style="height:10px"></div>
+      <input id="cliName" class="field" placeholder="Nome do cliente">
+      <div style="height:10px"></div>
+      <input id="cliTel" class="field" placeholder="Telefone (opcional)">
+      <button class="btn email" onclick="addClient()">Adicionar</button>
+      <div id="cliList" style="margin-top:12px;color:var(--muted)"></div>
+    </div>
+  </div>
+
+  <div id="agendar" class="view hide">
+    <div class="section-title">Agendar</div>
+    <div class="card">
+      <div class="sub">Criar agendamento (modo teste)</div>
+      <div style="height:10px"></div>
+      <input id="agTitle" class="field" placeholder="Título">
+      <div style="height:10px"></div>
+      <input id="agWhen" class="field" placeholder="Data/Hora (ex: 16/01 14:30)">
+      <button class="btn email" onclick="addBooking()">Salvar agendamento</button>
+      <div id="agList" style="margin-top:12px;color:var(--muted)"></div>
+    </div>
+  </div>
+
+  <div id="calendario" class="view hide">
+    <div class="section-title">Calendário</div>
+    <div class="card"><div class="sub">Placeholder premium — visão mensal/semana vem na próxima.</div></div>
+  </div>
+
+  <div id="tarefas" class="view hide">
+    <div class="section-title">Tarefas</div>
+    <div class="card">
+      <div class="sub">Adicionar tarefa (modo teste)</div>
+      <div style="height:10px"></div>
+      <input id="tk" class="field" placeholder="Nova tarefa...">
+      <button class="btn email" onclick="addTask()">Adicionar</button>
+      <div id="tkList" style="margin-top:12px;color:var(--muted)"></div>
+    </div>
+  </div>
+
+  <div id="mensagens" class="view hide">
+    <div class="section-title">Mensagens</div>
+    <div class="card"><div class="sub">Centro de mensagens (placeholder).</div></div>
+  </div>
+
+  <div id="config" class="view hide">
+    <div class="section-title">Configuração</div>
+    <div class="card">
+      <div class="sub">Tema virá na próxima versão (claro / escuro / sistema).</div>
+      <div style="height:10px"></div>
+      <button class="btn secondary" onclick="toast('Tema: em breve')">Tema</button>
+      <button class="btn secondary" onclick="toast('Segurança Firebird: em breve')">Segurança</button>
+    </div>
+  </div>
+
+  <div id="novo" class="view hide">
+    <div class="section-title">+ Novo</div>
+    <div class="card">
+      <button class="btn email" onclick="go('clientes');toast('Novo cliente');">Novo cliente</button>
+      <button class="btn email" onclick="go('agendar');toast('Novo agendamento');">Novo agendamento</button>
+      <button class="btn email" onclick="go('tarefas');toast('Nova tarefa');">Nova tarefa</button>
+      <button class="btn secondary" onclick="location.href='erp.html'">Novo (ERP)</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer-nav"><div class="footer-inner">
+  <div class="tab active" data-go="dashboard">Home</div>
+  <div class="tab" data-go="tarefas">Tarefas</div>
+  <div class="tab" onclick="location.href='erp.html'">ERP</div>
+</div></div>
+
+<div id="toast" class="toast"></div>
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),2200);}
+function logout(){localStorage.removeItem('kg_session');toast('Saiu');setTimeout(()=>location.href='index.html',350);}
+
+const menuBtn=document.getElementById('menuBtn');
+const menu=document.getElementById('menu');
+function closeMenu(){menu.classList.remove('open');}
+menuBtn.addEventListener('click',(e)=>{e.stopPropagation();menu.classList.toggle('open');});
+document.addEventListener('click',(e)=>{if(menu.classList.contains('open') && !menu.contains(e.target) && e.target!==menuBtn) closeMenu();});
+menu.addEventListener('click',(e)=>{const item=e.target.closest('[data-go]'); if(!item) return; go(item.dataset.go); closeMenu();});
+
+function go(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));
+  const el=document.getElementById(id);
+  if(el) el.classList.remove('hide');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const tab=document.querySelector('.tab[data-go="'+id+'"]');
+  if(tab) tab.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+(function init(){
+  const s=JSON.parse(localStorage.getItem('kg_session')||'null');
+  if(!s) return location.href='index.html';
+  document.getElementById('who').textContent=s.name||'usuário';
+  const d=JSON.parse(localStorage.getItem('kg_diary')||'null');
+  document.getElementById('diary').textContent=d? (d.name+' • '+d.type) : '—';
+  renderAll();
+})();
+
+function getArr(k){return JSON.parse(localStorage.getItem(k)||'[]');}
+function setArr(k,a){localStorage.setItem(k,JSON.stringify(a));}
+
+function addTask(){
+  const v=(document.getElementById('tk').value||'').trim();
+  if(!v) return toast('Digite uma tarefa.');
+  const a=getArr('kg_tasks'); a.unshift({t:v,at:Date.now()}); setArr('kg_tasks',a);
+  document.getElementById('tk').value=''; renderTasks(); toast('Tarefa adicionada');
+}
+function renderTasks(){const a=getArr('kg_tasks');document.getElementById('tkList').innerHTML=a.length?a.map(x=>'• '+x.t).join('<br>'):'Nenhuma tarefa ainda.';}
+
+function addClient(){
+  const n=(document.getElementById('cliName').value||'').trim();
+  if(!n) return toast('Digite o nome do cliente.');
+  const t=(document.getElementById('cliTel').value||'').trim();
+  const a=getArr('kg_clients'); a.unshift({n,t,at:Date.now()}); setArr('kg_clients',a);
+  document.getElementById('cliName').value=''; document.getElementById('cliTel').value='';
+  renderClients(); toast('Cliente adicionado');
+}
+function renderClients(){const a=getArr('kg_clients');document.getElementById('cliList').innerHTML=a.length?a.map(x=>'• <b>'+x.n+'</b>'+(x.t?(' — '+x.t):'')).join('<br>'):'Nenhum cliente ainda.';}
+
+function addBooking(){
+  const title=(document.getElementById('agTitle').value||'').trim();
+  const when=(document.getElementById('agWhen').value||'').trim();
+  if(!title||!when) return toast('Preencha título e data/hora.');
+  const a=getArr('kg_bookings'); a.unshift({title,when,at:Date.now()}); setArr('kg_bookings',a);
+  document.getElementById('agTitle').value=''; document.getElementById('agWhen').value='';
+  renderBookings(); toast('Agendamento salvo');
+}
+function renderBookings(){const a=getArr('kg_bookings');document.getElementById('agList').innerHTML=a.length?a.map(x=>'• <b>'+x.title+'</b> — '+x.when).join('<br>'):'Nenhum agendamento ainda.';}
+
+function renderAll(){renderTasks();renderClients();renderBookings();}
+</script></body></html>

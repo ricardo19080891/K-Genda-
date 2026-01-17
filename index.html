@@ -1,117 +1,40 @@
-<!DOCTYPE html><html lang="pt-BR"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>K-Genda • Login</title>
-<link rel="manifest" href="manifest.json">
-
-<style>
-:root{
-  --bg:#0b1020; --card:#111633; --text:#e9ecf1; --muted:#9aa3b2;
-  --stroke:rgba(255,255,255,.12);
-  --brandA:#5ddcff; --brandB:#7f5cff;
-}
-*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial}
-html,body{height:100%}
-body{
-  margin:0;
-  background:
-    radial-gradient(1000px 600px at 12% 10%, rgba(93,220,255,.12), transparent 60%),
-    radial-gradient(900px 600px at 88% 18%, rgba(127,92,255,.12), transparent 55%),
-    linear-gradient(180deg,#0b1020,#070a12);
-  color:var(--text);
-}
-a{color:#b9c2ff;text-decoration:none}
-.card{
-  background:linear-gradient(180deg, rgba(21,28,58,.75), rgba(15,20,48,.62));
-  border:1px solid var(--stroke);
-  border-radius:22px;
-  padding:22px;
-  box-shadow:0 18px 45px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
-  backdrop-filter: blur(12px);
-}
-.pill{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);font-weight:800;font-size:12px;color:rgba(233,236,241,.85)}
-.sub{color:var(--muted);font-size:14px}
-.btn{
-  width:100%; padding:14px 16px; border-radius:14px; border:0;
-  margin:10px 0; display:flex; gap:12px; align-items:center; justify-content:center;
-  font-size:15px; font-weight:800; cursor:pointer; user-select:none;
-}
-.btn.secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.12)}
-.btn.google{background:#fff;color:#111}
-.btn.apple{background:#000;color:#fff}
-.btn.github{background:#24292f;color:#fff}
-.btn.email{background:linear-gradient(90deg,var(--brandA),var(--brandB));color:#070a12}
-.field{
-  width:100%; padding:14px 14px; border-radius:14px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(7,10,18,.35); color:var(--text); font-size:15px; outline:none;
-}
-.field::placeholder{color:rgba(233,236,241,.5)}
-.small{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
-.sep{display:flex;align-items:center;gap:12px;color:#7f88a6;margin:14px 0 10px}
-.sep:before,.sep:after{content:"";flex:1;height:1px;background:rgba(255,255,255,.12)}
-.linkbar{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-weight:700;font-size:13px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.toast{
-  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
-  background:rgba(0,0,0,.72);color:#fff;
-  border:1px solid rgba(255,255,255,.12);
-  padding:12px 14px;border-radius:14px;
-  box-shadow:0 12px 30px rgba(0,0,0,.35);
-  max-width:min(520px,92vw);
-  opacity:0;pointer-events:none;transition:opacity .2s ease;
-}
-.toast.show{opacity:1}
-</style>
-
-<style>.wrap{width:min(440px,92vw);padding:22px}</style>
-</head><body>
-<div class="wrap"><div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-    <div class="pill">K‑Genda • Premium</div><div class="pill">PWA</div>
-  </div>
-  <div style="font-size:40px;font-weight:900;margin:0 0 6px">Entrar</div>
-  <div class="sub" style="margin-bottom:18px">Acesse sua conta K‑Genda</div>
-
-  <button class="btn google" onclick="soon('Google')"><span><svg width="22" height="22" viewBox="0 0 48 48" aria-hidden="true">
-  <path fill="#EA4335" d="M24 9.5c3.1 0 5.9 1.1 8.1 3.1l6-6C34.4 3.3 29.6 1.5 24 1.5 14.6 1.5 6.6 6.9 2.7 14.7l7 5.4C11.5 13.6 17.2 9.5 24 9.5z"/>
-  <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4.1H24v7.8h12.7c-.3 2-1.6 5-4.5 7.1l6.9 5.3c4-3.7 6.4-9.2 6.4-15.1z"/>
-  <path fill="#FBBC05" d="M9.7 28.1c-.5-1.6-.8-3.2-.8-5s.3-3.4.8-5l-7-5.4C1.3 16.1.5 19.9.5 23.1s.8 7 2.2 10.4l7-5.4z"/>
-  <path fill="#34A853" d="M24 46.5c5.6 0 10.4-1.8 13.9-4.9l-6.9-5.3c-1.9 1.3-4.4 2.3-7 2.3-6.8 0-12.5-4.1-14.3-10l-7 5.4c3.9 7.8 11.9 12.5 21.3 12.5z"/>
-</svg></span>Entrar com Google</button>
-  <button class="btn apple" onclick="soon('Apple')"><span style="color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-  <path fill="currentColor" d="M16.365 1.43c0 1.14-.41 2.21-1.23 3.15-.99 1.12-2.6 1.99-4.06 1.87-.18-1.25.36-2.5 1.19-3.44.91-1.04 2.51-1.9 4.1-1.58zM20.86 17.2c-.65 1.49-.96 2.15-1.8 3.46-1.17 1.82-2.82 4.09-4.86 4.11-1.82.02-2.29-1.19-4.76-1.17-2.46.01-2.98 1.19-4.8 1.17-2.03-.02-3.58-2.07-4.75-3.89C.61 18.06-.24 14.76 1.1 12.33c.95-1.73 2.46-2.75 4.07-2.75 1.78 0 2.9 1.23 4.76 1.23 1.8 0 2.9-1.23 4.77-1.23 1.43 0 2.95.78 3.9 2.12-3.41 1.87-2.86 6.8.3 5.5z"/>
-</svg></span>Entrar com Apple</button>
-  <button class="btn github" onclick="soon('GitHub')"><span style="color:#fff"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-  <path fill="currentColor" d="M12 .5C5.73.5.75 5.62.75 12c0 5.1 3.17 9.43 7.57 10.96.55.11.75-.24.75-.53 0-.26-.01-.96-.02-1.88-3.08.68-3.73-1.52-3.73-1.52-.5-1.3-1.22-1.65-1.22-1.65-.99-.7.07-.69.07-.69 1.1.08 1.67 1.15 1.67 1.15.98 1.7 2.57 1.2 3.2.92.1-.73.38-1.2.7-1.48-2.46-.29-5.05-1.26-5.05-5.6 0-1.24.43-2.26 1.14-3.06-.12-.29-.5-1.45.11-3.02 0 0 .94-.31 3.08 1.17.89-.25 1.85-.38 2.8-.38.95 0 1.91.13 2.8.38 2.14-1.48 3.08-1.17 3.08-1.17.61 1.57.23 2.73.11 3.02.71.8 1.14 1.82 1.14 3.06 0 4.35-2.6 5.3-5.07 5.58.39.34.74 1.02.74 2.06 0 1.49-.01 2.69-.01 3.06 0 .29.2.65.76.53 4.39-1.53 7.56-5.86 7.56-10.96C23.25 5.62 18.27.5 12 .5z"/>
-</svg></span>Entrar com GitHub</button>
-
-  <div class="sep">ou</div>
-
-  <input id="email" class="field" placeholder="Email" type="email" autocomplete="username">
-  <div style="height:10px"></div>
-  <input id="pass" class="field" placeholder="Senha" type="password" autocomplete="current-password">
-  <button class="btn email" onclick="loginEmail()">Entrar com Email</button>
-
-  <div class="linkbar">
-    <a href="signup.html">Criar nova conta</a>
-    <a href="#" onclick="soon('Recuperação de senha');return false;">Esqueci a senha</a>
-  </div>
-
-  <div class="small">Logins sociais e segurança avançada (Firebird) serão ativados em breve.</div>
-</div></div>
-
-<div id="toast" class="toast"></div>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K-GENDA Premium</title>
 <script>
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__tt);window.__tt=setTimeout(()=>t.classList.remove('show'),2200);}
-function soon(p){toast(p+" disponível em breve.");}
-function loginEmail(){
-  const email=(document.getElementById('email').value||'').trim().toLowerCase();
-  const pass=document.getElementById('pass').value||'';
-  const users=JSON.parse(localStorage.getItem('kg_users')||'[]');
-  const u=users.find(x=>x.email===email);
-  if(!u) return toast("Conta não encontrada. Crie uma conta.");
-  if(u.pass!==pass) return toast("Senha incorreta.");
-  localStorage.setItem('kg_session', JSON.stringify({email:u.email,name:u.name}));
-  window.location.href='app.html';
+const i18n={
+  "pt":{"title":"Entrar","login":"Entrar","signup":"Criar conta"},
+  "en":{"title":"Login","login":"Login","signup":"Create account"},
+  "es":{"title":"Ingresar","login":"Ingresar","signup":"Crear cuenta"}
+};
+function setLang(l){
+  localStorage.setItem("lang",l);
+  document.getElementById("title").innerText=i18n[l].title;
+  document.getElementById("btnLogin").innerText=i18n[l].login;
+  document.getElementById("btnSignup").innerText=i18n[l].signup;
 }
-</script></body></html>
+window.onload=()=>setLang(localStorage.getItem("lang")||"pt");
+</script>
+<style>
+body{font-family:-apple-system,Segoe UI;background:#0b1020;color:#fff;
+display:flex;justify-content:center;align-items:center;height:100vh}
+.card{background:#111633;padding:24px;border-radius:20px;width:90%;max-width:360px}
+button{width:100%;padding:14px;border-radius:14px;border:0;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="card">
+<h1 id="title">Entrar</h1>
+<select onchange="setLang(this.value)">
+<option value="pt">PT-BR</option>
+<option value="en">EN</option>
+<option value="es">ES</option>
+</select>
+<button id="btnLogin">Entrar</button>
+<button id="btnSignup">Criar conta</button>
+</div>
+</body>
+</html>
